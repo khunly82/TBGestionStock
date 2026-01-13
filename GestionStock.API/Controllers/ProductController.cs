@@ -22,13 +22,18 @@ namespace GestionStock.API.Controllers
         [HttpPost]
         public async Task<ActionResult> AddProduct(ProductAddDto dto)
         {
-            // Reset du stream au début
-            using var stream = dto.Image?.OpenReadStream();
-            stream.Position = 0;
+            MemoryStream? ms = null;
 
-            using var ms = new MemoryStream((int?)dto.Image?.Length ?? 0); // capacité exacte
-            await stream.CopyToAsync(ms);
-            ms.Position = 0;
+            if (dto.Image != null && dto.Image.Length > 0)
+            {
+                ms = new MemoryStream((int)dto.Image.Length);
+
+                using var stream = dto.Image.OpenReadStream();
+                stream.Position = 0;
+                await stream.CopyToAsync(ms);
+
+                ms.Position = 0;
+            }
 
             try
             {
