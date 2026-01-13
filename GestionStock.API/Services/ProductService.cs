@@ -69,14 +69,16 @@ namespace GestionStock.API.Services
 
         public Stream Resize(Stream stream, int maxSizeKb)
         {
-            using var original = SKBitmap.Decode(stream);
+            var original = SKBitmap.Decode(stream);
 
             int quality = 90;
             do
             {
-                var encoded = original.Encode(SKEncodedImageFormat.Webp, quality);
+                using var encoded = original.Encode(SKEncodedImageFormat.Webp, quality);
 
-                Stream ms = encoded.AsStream();
+                var ms = new MemoryStream();
+                encoded.AsStream().CopyTo(ms);
+                ms.Position = 0;
 
                 if (ms.Length / 1024 <= maxSizeKb)
                     return ms;
