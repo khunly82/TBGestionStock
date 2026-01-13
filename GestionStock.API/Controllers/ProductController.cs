@@ -22,21 +22,11 @@ namespace GestionStock.API.Controllers
         [HttpPost]
         public async Task<ActionResult> AddProduct(ProductAddDto dto)
         {
-            MemoryStream? ms = null;
-
-            if (dto.Image != null && dto.Image.Length > 0)
-            {
-                ms = new MemoryStream((int)dto.Image.Length);
-
-                using var stream = dto.Image.OpenReadStream();
-                stream.Position = 0;
-                await stream.CopyToAsync(ms);
-
-                ms.Position = 0;
-            }
 
             try
             {
+                using var stream = dto.Image?.OpenReadStream();
+
                 Product p = await productService.Add(new Product
                 {
                     Reference = "",
@@ -50,7 +40,7 @@ namespace GestionStock.API.Controllers
                         StartDate = DateTime.UtcNow
                     }
                         ]
-                }, dto.Image == null ? null : ms);
+                }, dto.Image == null ? null : stream);
             }
             catch (Exception ex)
             {
