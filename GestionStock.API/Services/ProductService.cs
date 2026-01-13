@@ -32,11 +32,15 @@ namespace GestionStock.API.Services
             }
 
             // Image max 200ko
-            if(image != null)
+            if (image != null)
             {
-                // reduire l'image à 200ko max
-                using Stream stream = Resize(image, 200);
-                string url = await UploadFile(stream, fileName ?? Guid.NewGuid().ToString());
+                using var memoryStreamInput = new MemoryStream();
+                await image.CopyToAsync(memoryStreamInput);
+                memoryStreamInput.Position = 0;
+
+                using Stream resizedStream = Resize(memoryStreamInput, 200);
+
+                string url = await UploadFile(resizedStream, fileName ?? Guid.NewGuid().ToString());
                 p.ImageUrl = url;
             }
 
