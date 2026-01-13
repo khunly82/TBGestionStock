@@ -20,7 +20,6 @@ namespace GestionStock.API.Controllers
         }
 
         [HttpPost]
-        [Consumes("multipart/form-data")]
         public async Task<ActionResult> AddProduct(ProductAddDto dto)
         {
             using MemoryStream ms = new MemoryStream();
