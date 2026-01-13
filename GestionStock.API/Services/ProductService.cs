@@ -75,14 +75,15 @@ namespace GestionStock.API.Services
             do
             {
                 using var encoded = original.Encode(SKEncodedImageFormat.Webp, quality);
-
                 var ms = new MemoryStream();
-                encoded.AsStream().CopyTo(ms);
+                using (var encodedStream = encoded.AsStream())
+                {
+                    encodedStream.CopyTo(ms);
+                }
                 ms.Position = 0;
 
                 if (ms.Length / 1024 <= maxSizeKb)
                     return ms;
-
                 quality -= 5;
             } while (quality >= 10);
 
