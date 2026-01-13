@@ -22,8 +22,12 @@ namespace GestionStock.API.Controllers
         [HttpPost]
         public async Task<ActionResult> AddProduct(ProductAddDto dto)
         {
-            using MemoryStream ms = new MemoryStream();
-            dto.Image?.CopyTo(ms);
+            // Reset du stream au début
+            using var stream = dto.Image?.OpenReadStream();
+            stream.Position = 0;
+
+            using var ms = new MemoryStream((int?)dto.Image?.Length ?? 0); // capacité exacte
+            await stream.CopyToAsync(ms);
             ms.Position = 0;
 
             try
