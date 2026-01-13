@@ -34,14 +34,22 @@ namespace GestionStock.API.Services
             // Image max 200ko
             if (image != null)
             {
-                using var memoryStreamInput = new MemoryStream();
-                await image.CopyToAsync(memoryStreamInput);
-                memoryStreamInput.Position = 0;
+                // ETAPE 1 : On convertit tout le flux en tableau d'octets (byte[])
+                // Cela coupe tout lien avec le flux HTTP entrant qui peut être instable
+                byte[] imageBytes;
+                using (var ms = new MemoryStream())
+                {
+                    await image.CopyToAsync(ms);
+                    imageBytes = ms.ToArray();
+                }
 
-                using Stream resizedStream = Resize(memoryStreamInput, 200);
-
-                string url = await UploadFile(resizedStream, fileName ?? Guid.NewGuid().ToString());
-                p.ImageUrl = url;
+                // On passe le tableau d'octets, plus de Stream ici
+                using (var resizedStream = Resize(imageBytes, 200))
+                {
+                    // UploadFile prend un Stream, c'est OK ici car resizedStream est un MemoryStream propre
+                    string url = await UploadFile(resizedStream, fileName ?? Guid.NewGuid().ToString());
+                    p.ImageUrl = url;
+                }
             }
 
             db.Products.Add(p);
@@ -71,27 +79,30 @@ namespace GestionStock.API.Services
         }
 
 
-        public Stream Resize(Stream stream, int maxSizeKb)
+        public Stream Resize(byte[] fileBytes, int maxSizeKb)
         {
-            var original = SKBitmap.Decode(stream);
+            using var original = SKBitmap.Decode(fileBytes);
+
+            if (original == null)
+            {
+                throw new ArgumentException("Le format de l'image est invalide ou non supporté par SkiaSharp.");
+            }
 
             int quality = 90;
             do
             {
-                using var encoded = original.Encode(SKEncodedImageFormat.Webp, quality);
-                var ms = new MemoryStream();
-                using (var encodedStream = encoded.AsStream())
-                {
-                    encodedStream.CopyTo(ms);
-                }
-                ms.Position = 0;
+                using var data = original.Encode(SKEncodedImageFormat.Webp, quality);
 
-                if (ms.Length / 1024 <= maxSizeKb)
-                    return ms;
+                byte[] resultBytes = data.ToArray();
+
+                if (resultBytes.Length / 1024 <= maxSizeKb)
+                {
+                    return new MemoryStream(resultBytes);
+                }
                 quality -= 5;
             } while (quality >= 10);
 
-            throw new Exception("Impossible de reduire l'image");
+            throw new Exception("Impossible de réduire l'image en dessous de la taille demandée.");
         }
     }
 }
