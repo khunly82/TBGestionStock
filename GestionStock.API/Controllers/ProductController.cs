@@ -40,7 +40,7 @@ namespace GestionStock.API.Controllers
                         StartDate = DateTime.UtcNow
                     }
                         ]
-                }, dto.Image == null ? null : stream);
+                }, stream);
             }
             catch (Exception ex)
             {

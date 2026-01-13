@@ -5,6 +5,7 @@ namespace GestionStock.API.Dto
     public class ProductAddDto
     {
         [Required]
+        [MinLength(4)]
         public required string Name { get; set; }
         public string? Description { get; set; }
         public decimal Price { get; set; }
