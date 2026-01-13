@@ -35,16 +35,16 @@ namespace GestionStock.API.Controllers
                     Categories = categoryService.GetByIds(dto.Categories),
                     Stock = dto.Stock,
                     Prices = [
-                            new ProductPrice {
-                        Price = dto.Price,
-                        StartDate = DateTime.UtcNow
-                    }
-                        ]
+                        new ProductPrice {
+                            Price = dto.Price,
+                            StartDate = DateTime.UtcNow
+                        }
+                    ]
                 }, stream);
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                return BadRequest(ex.StackTrace);
             }
 
             return Created();
