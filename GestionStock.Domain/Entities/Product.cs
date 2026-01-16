@@ -14,6 +14,7 @@ namespace GestionStock.Domain.Entities
         public string? Description { get; set; }
         public string? ImageUrl { get; set; }
         public required int Stock { get; set; }
+        public bool IsDeleted { get; set; }
 
         // navigation Properties
         public List<Category> Categories { get; set; } = null!;

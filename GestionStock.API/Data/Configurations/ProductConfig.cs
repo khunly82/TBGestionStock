@@ -16,6 +16,8 @@ namespace GestionStock.API.Data.Configurations
                 .HasMaxLength(8)
                 .IsFixedLength(true)
                 .IsUnicode(false); // CHAR(8)
+
+            builder.HasQueryFilter(p => !p.IsDeleted);
         }
     }
 }

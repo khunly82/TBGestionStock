@@ -16,7 +16,9 @@ namespace GestionStock.API.Controllers
         [HttpGet]
         public ActionResult<List<ProductDto>> Get()
         {
-            return Ok(productService.Get().Select(p => new ProductDto(p)));
+            return Ok(productService.Get()
+                .Select(p => new ProductDto(p))
+            );
         }
 
         [HttpPost]
@@ -48,6 +50,20 @@ namespace GestionStock.API.Controllers
             }
 
             return Created();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete([FromRoute] int id)
+        {
+            try
+            {
+                productService.Remove(id);
+                return NoContent();
+            }
+            catch (KeyNotFoundException)
+            {
+                return NotFound();
+            }
         }
     }
 }

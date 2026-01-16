@@ -12,7 +12,7 @@ namespace GestionStock.UnitTests.Services
 
         private List<Product> products = [
             new Product { Id = 1, Name = "Coca cola 33 cl", Reference = "COCA0001", Stock = 50 },
-            new Product { Id = 1, Name = "Coca cola 50 cl", Reference = "COCA0002", Stock = 50 },
+            new Product { Id = 2, Name = "Coca cola 50 cl", Reference = "COCA0002", Stock = 50, IsDeleted = true },
         ];
 
         private List<Category> categories = [
@@ -116,6 +116,16 @@ namespace GestionStock.UnitTests.Services
                 Product p = await productService.Add(toAdd);
 
             });
-        } 
+        }
+
+
+        [Fact]
+        public void GetAll()
+        {
+            // act 
+            List<Product> l = productService.Get(true);
+
+            Assert.Equal(2, l.Count);
+        }
     }
 }

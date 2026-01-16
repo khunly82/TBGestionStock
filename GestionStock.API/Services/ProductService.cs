@@ -9,11 +9,17 @@ namespace GestionStock.API.Services
 {
     public class ProductService(StockContext db, IConfiguration configuration)
     {
-        public List<Product> Get()
+        public List<Product> Get(bool showDeleted = false)
         {
-            return db.Products
+            var query = db.Products
                 .Include(p => p.Prices)
-                .Include(p => p.Categories).ToList();
+                .Include(p => p.Categories).AsQueryable();
+
+            if(showDeleted)
+            {
+                query = query.IgnoreQueryFilters();
+            }
+            return query.ToList();
         }
         public async Task<Product> Add(Product p, Stream? image = null, string? fileName = null)
         {
@@ -56,6 +62,26 @@ namespace GestionStock.API.Services
             db.SaveChanges();
 
             return p;
+        }
+
+
+        public void Remove(int id)
+        {
+            // chercher le produit qui correspond à l'id
+            Product? toDelete = db.Products.Find(id);
+            // si nexiste pas
+            if(toDelete == null)
+            {
+                // envoyer une erreur
+                throw new KeyNotFoundException();
+            }
+            // sinon
+            // todo: // verifier si le produit est dejà dans une commande
+            // remove le produit
+            db.Remove(toDelete);
+            // sauver les changement
+            db.SaveChanges();
+
         }
 
         public async Task<string> UploadFile(Stream stream, string fileName)
