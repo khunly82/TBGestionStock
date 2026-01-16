@@ -1,8 +1,9 @@
 ﻿using GestionStock.API.Dto;
+using GestionStock.API.Hubs;
 using GestionStock.API.Services;
 using GestionStock.Domain.Entities;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace GestionStock.API.Controllers
 {
@@ -10,7 +11,8 @@ namespace GestionStock.API.Controllers
     [ApiController]
     public class ProductController(
         ProductService productService,
-        CategoryService categoryService
+        CategoryService categoryService,
+        IHubContext<ProductHub> productHub
     ) : ControllerBase
     {
         [HttpGet]
@@ -43,6 +45,8 @@ namespace GestionStock.API.Controllers
                         }
                     ]
                 }, stream);
+
+                await productHub.Clients.All.SendAsync("productsHasChanged");
             }
             catch (Exception ex)
             {
@@ -53,11 +57,12 @@ namespace GestionStock.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             try
             {
                 productService.Remove(id);
+                await productHub.Clients.All.SendAsync("productsHasChanged");
                 return NoContent();
             }
             catch (KeyNotFoundException)
