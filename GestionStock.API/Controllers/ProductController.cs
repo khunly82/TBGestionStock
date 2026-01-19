@@ -30,7 +30,6 @@ namespace GestionStock.API.Controllers
             try
             {
                 using var stream = dto.Image?.OpenReadStream();
-
                 Product p = await productService.Add(new Product
                 {
                     Reference = "",
@@ -45,7 +44,6 @@ namespace GestionStock.API.Controllers
                         }
                     ]
                 }, stream);
-
                 await productHub.Clients.All.SendAsync("productsHasChanged");
             }
             catch (Exception ex)

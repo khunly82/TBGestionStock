@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GestionStock.Domain\GestionStock.Domain.csproj" />
+    <ProjectReference Include="..\GestionStock.Utils\GestionStock.Utils.csproj" />
   </ItemGroup>
 
 </Project>

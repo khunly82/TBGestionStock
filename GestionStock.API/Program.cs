@@ -15,6 +15,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<JwtManager>();
 
 builder.Services.AddDbContext<StockContext>(o => 
     o.UseSqlServer(builder.Configuration.GetConnectionString("Default"))

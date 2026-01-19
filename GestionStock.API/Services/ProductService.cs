@@ -63,8 +63,6 @@ namespace GestionStock.API.Services
 
             return p;
         }
-
-
         public void Remove(int id)
         {
             // chercher le produit qui correspond à l'id
@@ -83,7 +81,6 @@ namespace GestionStock.API.Services
             db.SaveChanges();
 
         }
-
         public async Task<string> UploadFile(Stream stream, string fileName)
         {
             BlobServiceClient blobServiceClient = new BlobServiceClient(configuration.GetConnectionString("BlobStorage"));
@@ -103,8 +100,6 @@ namespace GestionStock.API.Services
 
             return "https://technobel.blob.core.windows.net/products-images/" + fileName;
         }
-
-
         public Stream Resize(byte[] fileBytes, int maxSizeKb)
         {
             using var original = SKBitmap.Decode(fileBytes);
