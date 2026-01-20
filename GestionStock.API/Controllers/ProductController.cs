@@ -2,6 +2,7 @@
 using GestionStock.API.Hubs;
 using GestionStock.API.Services;
 using GestionStock.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 
@@ -16,6 +17,7 @@ namespace GestionStock.API.Controllers
     ) : ControllerBase
     {
         [HttpGet]
+        [Authorize]
         public ActionResult<List<ProductDto>> Get()
         {
             return Ok(productService.Get()
@@ -24,6 +26,7 @@ namespace GestionStock.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Restocker")]
         public async Task<ActionResult> AddProduct(ProductAddDto dto)
         {
 
@@ -55,6 +58,7 @@ namespace GestionStock.API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
             try
