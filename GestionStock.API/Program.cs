@@ -41,7 +41,7 @@ builder.Services.AddDbContext<StockContext>(o =>
 );
 
 builder.Services.AddCors(b => b.AddDefaultPolicy(o => 
-    o.WithOrigins("http://localhost:5182", "http://localhost:5098")
+    o.WithOrigins("http://localhost:5182", "http://localhost:5098", "https://jolly-bush-054b7c603.1.azurestaticapps.net")
     .AllowCredentials()
     .AllowAnyMethod()
     .AllowAnyHeader()
